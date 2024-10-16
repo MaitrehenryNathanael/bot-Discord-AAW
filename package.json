@@ -1,0 +1,17 @@
+{
+  "dependencies": {
+    "discord.js": "^14.16.3",
+    "express": "^4.21.1",
+    "nodemon": "^3.1.7"
+  },
+  "name": "projet",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon ./server.js",
+    "start": "node ./server.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
