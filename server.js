@@ -1,20 +1,33 @@
-const express = require('express')
-const Discord = require('discord.js')
+const express = require('express');
+const { Client, GatewayIntentBits } = require('discord.js');
 
-const app = express()
-const port = 3000
-const bot = new Discord.Client()
+const app = express();
+const port = 3000;
+
+// Créer un nouveau client Discord avec les intents nécessaires
+const bot = new Client({
+    intents: [
+        GatewayIntentBits.Guilds,
+        GatewayIntentBits.GuildMessages,
+       // GatewayIntentBits.MessageContent
+    ]
+});
+
 app.use(express.json());
-
 app.use(express.static("public"));
 
-client.on('ready', () => {
-    console.log(`Je suis prêt !`); // On affiche un message de log dans la console (ligne de commande), lorsque le bot est démarré
+// Écouter l'événement `ready` pour savoir que le bot est en ligne
+bot.on('ready', () => {
+    console.log('Le bot est prêt !');
 });
-client.login('MTI5NjA5Mjg0NDU4MjM3NTQ3NQ.G8cp9g.YcGVnxkiz2F_VdBn50Ubd3rVtkem9Y1zIhr1kI');
+
+// Connecter le bot avec votre token (remplacez avec votre propre token)
+bot.login('MTI5NjA5Mjg0NDU4MjM3NTQ3NQ.G8cp9g.YcGVnxkiz2F_VdBn50Ubd3rVtkem9Y1zIhr1kI');
+
+// Lancer le serveur Express
 app.listen(port, () => {
-    console.log(`Server started on port: ${port}`)
-})
+    console.log(`Serveur démarré sur le port : ${port}`);
+});
 
 //test camille
 
