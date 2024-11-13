@@ -1,0 +1,49 @@
+// src/styles/styles.scss
+
+// Variables SASS
+$primary-color: #4CAF50;
+$secondary-color: #2196F3;
+
+// Style de la barre de navigation
+.navbar {
+  background-color: $primary-color;
+  padding: 10px;
+  .navbar-links {
+    display: flex;
+    justify-content: space-around;
+    list-style: none;
+    padding: 0;
+
+    .navbar-item {
+      color: white;
+      text-decoration: none;
+      font-size: 1.2rem;
+
+      &:hover {
+        color: $secondary-color;
+      }
+    }
+  }
+}
+
+// Style pour la page d'accueil
+.home-container {
+  text-align: center;
+  h1 {
+    color: $primary-color;
+  }
+}
+
+// Styles supplémentaires pour d'autres sections
+.skills-container, .login-container, .student-container {
+  padding: 20px;
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    th, td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+  }
+}

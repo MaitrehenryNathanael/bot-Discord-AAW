@@ -2,16 +2,24 @@
   "dependencies": {
     "discord.js": "^14.16.3",
     "express": "^4.21.1",
-    "nodemon": "^3.1.7"
+    "nodemon": "^3.1.7",
+    "parcel": "^2.13.0",
+    "react-router-dom": "^6.28.0",
+    "sass": "^1.80.7"
   },
   "name": "projet",
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon ./server.js",
+    "start-web": "parcel ./src/app/index.jsx",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start-dev": "nodemon ./server.js",
     "start": "node ./server.js"
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@parcel/transformer-sass": "^2.13.0"
+  }
 }
