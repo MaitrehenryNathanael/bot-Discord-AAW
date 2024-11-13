@@ -6,9 +6,10 @@ module.exports = class Test extends SlashCommandBuilder{
         this.description ="command test";
     }
     async execute(interaction) {
-        await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
-    }
-    toJSON() {
-        return super.toJSON();
+        try {
+            await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
+        }catch (e) {
+            console.error(e);
+        }
     }
 }

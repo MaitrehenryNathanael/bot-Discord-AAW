@@ -9,7 +9,9 @@ const Discord = require('discord.js')
 const {Collection, REST, Routes} = require('discord.js')
 const client = new Discord.Client({ intents: [
         Discord.GatewayIntentBits.Guilds,
-        Discord.GatewayIntentBits.GuildMessages
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.MessageContent,
+        Discord.GatewayIntentBits.GuildMembers
     ]})
 
 client.commands = new Collection( )
@@ -38,6 +40,16 @@ client.on('ready', async () => {
     }
 });
 
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+    const command = commands.filter(c => c.name === interaction.commandName)[0];
+    console.log(command)
+    try {
+        await command.execute(interaction);
+    } catch (e) {
+        console.error(e);
+    }
+})
 
 app.use(express.static("public"));
 
