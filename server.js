@@ -19,6 +19,32 @@ let skills = []; // Remplissez avec les données actuelles de Sheety ou une autr
 
 // Simulez l'appel API pour obtenir les compétences
 app.get('/api/skills', (req, res) => {
+    fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${config.SPREADSHEET_SHEETNAME}!${config.SPREADSHEET_DATA}?key=${config.SPREADSHEET_KEY}`)
+        .then(response => response.json())
+        .then(data => {
+            //res.send des datas
+            ///front prend juste les données pour les afficher depuis le back
+        })
+            console.log(data);  // Affichez toute la réponse pour vérifier la structure et les résultats
+            const rows = data.values || [];
+            console.log(`Nombre de lignes récupérées : ${rows.length}`,rows); // Vérifiez le nombre de lignes récupérées
+            setHeaders(rows[0]);  // En-têtes
+            const studentsData = rows.slice(1).map(row => {
+                const student = {
+                    name: row[0],
+                    discordId: row[1],
+                    lastUpdate: row[2],
+                    skills: []
+                };
+                console.log(student);
+                for (let i = 3; i < row.length; i++) {
+                    student.skills.push({
+                        skill: headers[i],
+                        level: row[i] === 'true' ? 'Oui' : 'Non'
+                    });
+                }
+                return student;
+            });
     res.json(skills);
 });
 

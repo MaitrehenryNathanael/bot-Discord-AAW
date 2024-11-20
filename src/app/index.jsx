@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {BrowserRouter as Router, Routes, Route, Link, useParams} from 'react-router-dom';
 import '../styles/styles.scss';
 import '../../dist/index.css';
 const config = require('../../config.json');
@@ -29,18 +29,41 @@ const Login = () => {
 
 // Composant des Compétences (Skills)
 const SkillsTable = () => {
-    const [skills, setSkills] = useState([]);
+    const [students, setStudents] = useState([]);
+    const [headers, setHeaders] = useState([]);
+
 
     useEffect(() => {
         // Fetch des données depuis Sheety
         fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${config.SPREADSHEET_SHEETNAME}!${config.SPREADSHEET_DATA}?key=${config.SPREADSHEET_KEY}`)
             .then(response => response.json())
             .then(data => {
-                console.log(data); // Voir la structure des données
-                setSkills(data); // Assurez-vous que 'remplissageSkills' est bien la bonne clé
+                console.log(data);  // Affichez toute la réponse pour vérifier la structure et les résultats
+                const rows = data.values || [];
+                console.log(`Nombre de lignes récupérées : ${rows.length}`,rows); // Vérifiez le nombre de lignes récupérées
+                setHeaders(rows[0]);  // En-têtes
+                const studentsData = rows.slice(1).map(row => {
+                    const student = {
+                        name: row[0],
+                        discordId: row[1],
+                        lastUpdate: row[2],
+                        skills: []
+                    };
+                    console.log(student);
+                    for (let i = 3; i < row.length; i++) {
+                        student.skills.push({
+                            skill: headers[i],
+                            level: row[i],
+                        });
+                    }
+                    return student;
+                });
+                setStudents(studentsData);
             })
-            .catch(error => console.error('Erreur lors de la récupération des compétences :', error));
+            .catch(error => console.error('Erreur lors de la récupération des étudiants :', error));
     }, []);
+
+    console.log("headers",headers);
 
     return (
         <div className="skills-container">
@@ -48,17 +71,20 @@ const SkillsTable = () => {
             <table>
                 <thead>
                 <tr>
-                    <th>Nom</th>
-                    <th>Compétence</th>
-                    <th>Niveau</th>
+                    {headers.map((skill, index) => (
+                        <th key={index}>{skill}</th>
+                    ))}
                 </tr>
                 </thead>
                 <tbody>
-                {skills.map((skill, index) => (
+                {students.map((student, index) => (
                     <tr key={index}>
-                        <td>{skill.name}</td>
-                        <td>{skill.skill}</td>
-                        <td>{skill.level}</td>
+                        <td>{student.name}</td>
+                        <td>{student.discordId}</td>
+                        <td>{student.lastUpdate}</td>
+                        {student.skills.map((skill, skillIndex) => (
+                            <td key={skillIndex}>{skill.level}</td>
+                        ))}
                     </tr>
                 ))}
                 </tbody>

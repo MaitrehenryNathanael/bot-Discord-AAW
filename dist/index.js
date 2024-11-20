@@ -654,112 +654,126 @@ const Login = ()=>{
 };
 // Composant des Compétences (Skills)
 const SkillsTable = ()=>{
-    const [skills, setSkills] = (0, _react.useState)([]);
+    const [students, setStudents] = (0, _react.useState)([]);
+    const [headers, setHeaders] = (0, _react.useState)([]);
     (0, _react.useEffect)(()=>{
         // Fetch des données depuis Sheety
         fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${config.SPREADSHEET_SHEETNAME}!${config.SPREADSHEET_DATA}?key=${config.SPREADSHEET_KEY}`).then((response)=>response.json()).then((data)=>{
-            console.log(data); // Voir la structure des données
-            setSkills(data); // Assurez-vous que 'remplissageSkills' est bien la bonne clé
-        }).catch((error)=>console.error("Erreur lors de la r\xe9cup\xe9ration des comp\xe9tences :", error));
+            console.log(data); // Affichez toute la réponse pour vérifier la structure et les résultats
+            const rows = data.values || [];
+            console.log(`Nombre de lignes r\xe9cup\xe9r\xe9es : ${rows.length}`, rows); // Vérifiez le nombre de lignes récupérées
+            setHeaders(rows[0]); // En-têtes
+            const studentsData = rows.slice(1).map((row)=>{
+                const student = {
+                    name: row[0],
+                    discordId: row[1],
+                    lastUpdate: row[2],
+                    skills: []
+                };
+                console.log(student);
+                for(let i = 3; i < row.length; i++)student.skills.push({
+                    skill: headers[i],
+                    level: row[i]
+                });
+                return student;
+            });
+            setStudents(studentsData);
+        }).catch((error)=>console.error("Erreur lors de la r\xe9cup\xe9ration des \xe9tudiants :", error));
     }, []);
+    console.log("headers", headers);
     return /*#__PURE__*/ (0, _reactDefault.default).createElement("div", {
         className: "skills-container",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 46,
+            lineNumber: 69,
             columnNumber: 9
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement("h2", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 47,
+            lineNumber: 70,
             columnNumber: 13
         },
         __self: undefined
     }, "Tableau des Comp\xe9tences"), /*#__PURE__*/ (0, _reactDefault.default).createElement("table", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 48,
+            lineNumber: 71,
             columnNumber: 13
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement("thead", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 49,
+            lineNumber: 72,
             columnNumber: 17
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement("tr", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 50,
+            lineNumber: 73,
             columnNumber: 17
         },
         __self: undefined
-    }, /*#__PURE__*/ (0, _reactDefault.default).createElement("th", {
-        __source: {
-            fileName: "src/app/index.jsx",
-            lineNumber: 51,
-            columnNumber: 21
-        },
-        __self: undefined
-    }, "Nom"), /*#__PURE__*/ (0, _reactDefault.default).createElement("th", {
-        __source: {
-            fileName: "src/app/index.jsx",
-            lineNumber: 52,
-            columnNumber: 21
-        },
-        __self: undefined
-    }, "Comp\xe9tence"), /*#__PURE__*/ (0, _reactDefault.default).createElement("th", {
-        __source: {
-            fileName: "src/app/index.jsx",
-            lineNumber: 53,
-            columnNumber: 21
-        },
-        __self: undefined
-    }, "Niveau"))), /*#__PURE__*/ (0, _reactDefault.default).createElement("tbody", {
-        __source: {
-            fileName: "src/app/index.jsx",
-            lineNumber: 56,
-            columnNumber: 17
-        },
-        __self: undefined
-    }, skills.map((skill, index)=>/*#__PURE__*/ (0, _reactDefault.default).createElement("tr", {
+    }, headers.map((skill, index)=>/*#__PURE__*/ (0, _reactDefault.default).createElement("th", {
             key: index,
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 58,
+                lineNumber: 75,
+                columnNumber: 25
+            },
+            __self: undefined
+        }, skill)))), /*#__PURE__*/ (0, _reactDefault.default).createElement("tbody", {
+        __source: {
+            fileName: "src/app/index.jsx",
+            lineNumber: 79,
+            columnNumber: 17
+        },
+        __self: undefined
+    }, students.map((student, index)=>/*#__PURE__*/ (0, _reactDefault.default).createElement("tr", {
+            key: index,
+            __source: {
+                fileName: "src/app/index.jsx",
+                lineNumber: 81,
                 columnNumber: 21
             },
             __self: undefined
         }, /*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 59,
+                lineNumber: 82,
                 columnNumber: 25
             },
             __self: undefined
-        }, skill.name), /*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
+        }, student.name), /*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 60,
+                lineNumber: 83,
                 columnNumber: 25
             },
             __self: undefined
-        }, skill.skill), /*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
+        }, student.discordId), /*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 61,
+                lineNumber: 84,
                 columnNumber: 25
             },
             __self: undefined
-        }, skill.level))))));
+        }, student.lastUpdate), student.skills.map((skill, skillIndex)=>/*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
+                key: skillIndex,
+                __source: {
+                    fileName: "src/app/index.jsx",
+                    lineNumber: 86,
+                    columnNumber: 29
+                },
+                __self: undefined
+            }, skill.level)))))));
 };
 // Composant pour visualiser les détails d'un étudiant
 const StudentProfile = ()=>{
-    const { studentId } = useParams();
+    const { studentId } = (0, _reactRouterDom.useParams)();
     const [studentSkills, setStudentSkills] = (0, _react.useState)([]);
     const [lastUpdated, setLastUpdated] = (0, _react.useState)('');
     (0, _react.useEffect)(()=>{
@@ -774,63 +788,63 @@ const StudentProfile = ()=>{
         className: "student-container",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 87,
+            lineNumber: 113,
             columnNumber: 9
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement("h2", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 88,
+            lineNumber: 114,
             columnNumber: 13
         },
         __self: undefined
     }, "Fiche de l'\xe9tudiant"), /*#__PURE__*/ (0, _reactDefault.default).createElement("p", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 89,
+            lineNumber: 115,
             columnNumber: 13
         },
         __self: undefined
     }, "Date de derni\xe8re mise \xe0 jour : ", lastUpdated), /*#__PURE__*/ (0, _reactDefault.default).createElement("table", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 90,
+            lineNumber: 116,
             columnNumber: 13
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement("thead", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 91,
+            lineNumber: 117,
             columnNumber: 17
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement("tr", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 92,
+            lineNumber: 118,
             columnNumber: 17
         },
         __self: undefined
     }, /*#__PURE__*/ (0, _reactDefault.default).createElement("th", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 93,
+            lineNumber: 119,
             columnNumber: 21
         },
         __self: undefined
     }, "Comp\xe9tence"), /*#__PURE__*/ (0, _reactDefault.default).createElement("th", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 94,
+            lineNumber: 120,
             columnNumber: 21
         },
         __self: undefined
     }, "Niveau"))), /*#__PURE__*/ (0, _reactDefault.default).createElement("tbody", {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 97,
+            lineNumber: 123,
             columnNumber: 17
         },
         __self: undefined
@@ -838,21 +852,21 @@ const StudentProfile = ()=>{
             key: index,
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 99,
+                lineNumber: 125,
                 columnNumber: 21
             },
             __self: undefined
         }, /*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 100,
+                lineNumber: 126,
                 columnNumber: 25
             },
             __self: undefined
         }, skill.skill), /*#__PURE__*/ (0, _reactDefault.default).createElement("td", {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 101,
+                lineNumber: 127,
                 columnNumber: 25
             },
             __self: undefined
@@ -863,7 +877,7 @@ const App = ()=>{
     return /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _reactRouterDom.BrowserRouter), {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 113,
+            lineNumber: 139,
             columnNumber: 9
         },
         __self: undefined
@@ -871,7 +885,7 @@ const App = ()=>{
         className: "navbar",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 114,
+            lineNumber: 140,
             columnNumber: 13
         },
         __self: undefined
@@ -879,7 +893,7 @@ const App = ()=>{
         className: "navbar-links",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 115,
+            lineNumber: 141,
             columnNumber: 17
         },
         __self: undefined
@@ -888,7 +902,7 @@ const App = ()=>{
         to: "/",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 116,
+            lineNumber: 142,
             columnNumber: 21
         },
         __self: undefined
@@ -897,7 +911,7 @@ const App = ()=>{
         to: "/login",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 117,
+            lineNumber: 143,
             columnNumber: 21
         },
         __self: undefined
@@ -906,7 +920,7 @@ const App = ()=>{
         to: "/skills",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 118,
+            lineNumber: 144,
             columnNumber: 21
         },
         __self: undefined
@@ -915,14 +929,14 @@ const App = ()=>{
         to: "/api/participants/${studentId}",
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 119,
+            lineNumber: 145,
             columnNumber: 21
         },
         __self: undefined
     }, "Profil des \xe9tudiants"))), /*#__PURE__*/ (0, _reactDefault.default).createElement((0, _reactRouterDom.Routes), {
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 122,
+            lineNumber: 148,
             columnNumber: 13
         },
         __self: undefined
@@ -931,13 +945,13 @@ const App = ()=>{
         element: /*#__PURE__*/ (0, _reactDefault.default).createElement(Home, {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 123,
+                lineNumber: 149,
                 columnNumber: 38
             }
         }),
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 123,
+            lineNumber: 149,
             columnNumber: 13
         },
         __self: undefined
@@ -946,13 +960,13 @@ const App = ()=>{
         element: /*#__PURE__*/ (0, _reactDefault.default).createElement(Login, {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 124,
+                lineNumber: 150,
                 columnNumber: 47
             }
         }),
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 124,
+            lineNumber: 150,
             columnNumber: 17
         },
         __self: undefined
@@ -961,13 +975,13 @@ const App = ()=>{
         element: /*#__PURE__*/ (0, _reactDefault.default).createElement(SkillsTable, {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 125,
+                lineNumber: 151,
                 columnNumber: 48
             }
         }),
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 125,
+            lineNumber: 151,
             columnNumber: 17
         },
         __self: undefined
@@ -976,13 +990,13 @@ const App = ()=>{
         element: /*#__PURE__*/ (0, _reactDefault.default).createElement(StudentProfile, {
             __source: {
                 fileName: "src/app/index.jsx",
-                lineNumber: 126,
+                lineNumber: 152,
                 columnNumber: 71
             }
         }),
         __source: {
             fileName: "src/app/index.jsx",
-            lineNumber: 126,
+            lineNumber: 152,
             columnNumber: 17
         },
         __self: undefined
@@ -993,7 +1007,7 @@ const root = (0, _clientDefault.default).createRoot(document.getElementById('roo
 root.render(/*#__PURE__*/ (0, _reactDefault.default).createElement(App, {
     __source: {
         fileName: "src/app/index.jsx",
-        lineNumber: 135,
+        lineNumber: 161,
         columnNumber: 13
     },
     __self: undefined
@@ -32227,7 +32241,7 @@ module.exports = require("96622d495519d4e");
 module.exports = JSON.parse("{\"name\":\"react-refresh\",\"description\":\"React is a JavaScript library for building user interfaces.\",\"keywords\":[\"react\"],\"version\":\"0.14.2\",\"homepage\":\"https://reactjs.org/\",\"bugs\":\"https://github.com/facebook/react/issues\",\"license\":\"MIT\",\"files\":[\"LICENSE\",\"README.md\",\"babel.js\",\"runtime.js\",\"cjs/\",\"umd/\"],\"main\":\"runtime.js\",\"exports\":{\".\":\"./runtime.js\",\"./runtime\":\"./runtime.js\",\"./babel\":\"./babel.js\",\"./package.json\":\"./package.json\"},\"repository\":{\"type\":\"git\",\"url\":\"https://github.com/facebook/react.git\",\"directory\":\"packages/react\"},\"engines\":{\"node\":\">=0.10.0\"},\"devDependencies\":{\"react-16-8\":\"npm:react@16.8.0\",\"react-dom-16-8\":\"npm:react-dom@16.8.0\",\"scheduler-0-13\":\"npm:scheduler@0.13.0\"}}");
 
 },{}],"7b52B":[function() {},{}],"3P7IG":[function() {},{}],"ebWHc":[function(require,module,exports,__globalThis) {
-module.exports = JSON.parse("{\"BOT_TOKEN\":\"MTI5NjA5Mjg0NDU4MjM3NTQ3NQ.G8cp9g.YcGVnxkiz2F_VdBn50Ubd3rVtkem9Y1zIhr1kI\",\"SPREADSHEET_ID\":\"1fk-8fG9yZju50WaQO5-bW7a1xKU3PVi74a4WvV-Y9pU\",\"SPREADSHEET_SHEETNAME\":\"Remplissage skills\",\"SPREADSHEET_DATA\":\"A1:AA200\",\"SPREADSHEET_KEY\":\"AIzaSyCt0ypZV5IcZfFpCTnCRG1qt4Zrs_1CjBs\"}");
+module.exports = JSON.parse("{\"BOT_TOKEN\":\"MTI5NjA5Mjg0NDU4MjM3NTQ3NQ.G8cp9g.YcGVnxkiz2F_VdBn50Ubd3rVtkem9Y1zIhr1kI\",\"SPREADSHEET_ID\":\"12IlZ5US1jQOlQBFj8L1ivkTPtNpEl2uJPygO7L_Y3dI\",\"SPREADSHEET_SHEETNAME\":\"Remplissage skills\",\"SPREADSHEET_DATA\":\"A1:AA50\",\"SPREADSHEET_KEY\":\"AIzaSyCt0ypZV5IcZfFpCTnCRG1qt4Zrs_1CjBs\"}");
 
 },{}]},["3jY31","8Wjsw"], "8Wjsw", "parcelRequire94c2")
 
