@@ -5,7 +5,7 @@ module.exports = class Test extends SlashCommandBuilder{
         this.name = 'test'
         this.description ="command test";
     }
-    async execute(interaction) {
+    async execute(client, interaction) {
         try {
             await interaction.reply(`This command was run by ${interaction.user.username}, who joined on ${interaction.member.joinedAt}.`);
         }catch (e) {

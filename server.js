@@ -43,9 +43,8 @@ client.on('ready', async () => {
 client.on('interactionCreate', async interaction => {
     if (!interaction.isCommand()) return;
     const command = commands.filter(c => c.name === interaction.commandName)[0];
-    console.log(command)
     try {
-        await command.execute(interaction);
+        await command.execute(client, interaction);
     } catch (e) {
         console.error(e);
     }
