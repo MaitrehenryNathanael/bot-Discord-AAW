@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom/client';
 import {BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate} from 'react-router-dom';
 import '../styles/styles.scss';
 
+
 // Importer le composant Home (accueil)
 import Home from "./Home";
 import AddSkill from "./addSkill";
@@ -10,9 +11,8 @@ import SkillsTable from "./skillsTable";
 const config = require('../../config.json');
 
 
-// Composant Connexion (démonstratif)
 const Login = ({ setIsLoggedIn }) => {
-    const navigate = useNavigate(); // Hook pour la navigation
+    const navigate = useNavigate();
 
     const handleLogin = () => {
         // Simulez une connexion utilisateur
@@ -22,8 +22,13 @@ const Login = ({ setIsLoggedIn }) => {
 
     return (
         <div className="login-container">
-            <h2>Connexion</h2>
-            <button onClick={handleLogin}>Se connecter via Discord</button>
+            <div className="login-form">
+                <h2>Connexion</h2>
+                <p>Veuillez vous connecter pour accéder à votre compte</p>
+                <button onClick={handleLogin} className="submit-button">
+                    Se connecter via Discord
+                </button>
+            </div>
         </div>
     );
 };
@@ -102,7 +107,7 @@ const App = () => {
                 </div>
             </nav>
             <Routes>
-            <Route path="/" element={<Home />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/skills" element={<SkillsTable config={config}/>} />
                 <Route path="/api/participants/${studentId}" element={<StudentProfile />} />
@@ -113,6 +118,6 @@ const App = () => {
 };
 
 
- // Rendu de l'application
+// Rendu de l'application
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(<App />);

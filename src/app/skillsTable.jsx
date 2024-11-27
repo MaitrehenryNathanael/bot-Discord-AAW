@@ -13,23 +13,22 @@ const SkillsTable = ({ config }) => {
             .then(response => response.json())
             .then(data => {
                 const rows = data.values || [];
-                setHeaders(rows[0]);  // En-têtes
+
+                // Garder seulement les 3 premières colonnes: Name, Discord ID, Last Update
+                const newHeaders = rows[0].slice(0, 3); // Limiter les en-têtes aux 3 premières colonnes
+                setHeaders(newHeaders);  // Définir les nouveaux en-têtes
+
                 const studentsData = rows.slice(1).map(row => {
+                    // Ne prendre que les 3 premières données pour chaque étudiant
                     const student = {
                         name: row[0],
                         discordId: row[1],
                         lastUpdate: row[2],
-                        skills: []
                     };
 
-                    for (let i = 3; i < row.length; i++) {
-                        student.skills.push({
-                            skill: headers[i],
-                            level: row[i],
-                        });
-                    }
                     return student;
                 });
+
                 setStudents(studentsData);
                 setFilteredStudents(studentsData); // Initialisation de la liste filtrée
             })
@@ -47,7 +46,7 @@ const SkillsTable = ({ config }) => {
 
     return (
         <div className="skills-container">
-            <h2>Tableau des Compétences</h2>
+            <h2>Tableau des Étudiants</h2>
             {/* Barre de recherche */}
             <input
                 type="text"
@@ -59,8 +58,8 @@ const SkillsTable = ({ config }) => {
             <table>
                 <thead>
                 <tr>
-                    {headers.map((skill, index) => (
-                        <th key={index}>{skill}</th>
+                    {headers.map((header, index) => (
+                        <th key={index}>{header}</th>
                     ))}
                 </tr>
                 </thead>
@@ -70,9 +69,6 @@ const SkillsTable = ({ config }) => {
                         <td>{student.name}</td>
                         <td>{student.discordId}</td>
                         <td>{student.lastUpdate}</td>
-                        {student.skills.map((skill, skillIndex) => (
-                            <td key={skillIndex}>{skill.level}</td>
-                        ))}
                     </tr>
                 ))}
                 </tbody>
