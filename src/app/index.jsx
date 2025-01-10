@@ -8,6 +8,7 @@ import '../styles/styles.scss';
 import Home from "./Home";
 import AddSkill from "./addSkill";
 import SkillsTable from "./skillsTable";
+import StudentProfile from './StudentProfile';
 const config = require('../../config.json');
 
 
@@ -34,48 +35,6 @@ const Login = ({ setIsLoggedIn }) => {
 };
 
 
-// Composant pour visualiser les détails d'un étudiant
-const StudentProfile = () => {
-    const { studentId } = useParams();
-    const [studentSkills, setStudentSkills] = useState([]);
-    const [lastUpdated, setLastUpdated] = useState('');
-
-    useEffect(() => {
-        fetch(`/api/participants/${studentId}`)
-            .then(response => response.json())
-            .then(data => {
-                setStudentSkills(data.skills);
-                setLastUpdated(data.lastUpdated);
-            })
-            .catch(error => console.error('Erreur lors de la récupération des détails de l\'étudiant :', error));
-    }, [studentId]);
-
-    return (
-        <div className="student-container">
-            <h2>Fiche de l'étudiant</h2>
-            <p>Date de dernière mise à jour : {lastUpdated}</p>
-            <table>
-                <thead>
-                <tr>
-                    <th>Compétence</th>
-                    <th>Niveau</th>
-                </tr>
-                </thead>
-                <tbody>
-                {studentSkills.map((skill, index) => (
-                    <tr key={index}>
-                        <td>{skill.skill}</td>
-                        <td>{skill.level}</td>
-                    </tr>
-                ))}
-                </tbody>
-            </table>
-        </div>
-    );
-};
-
-
-
 // Composant principal
 const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -85,7 +44,7 @@ const App = () => {
                 <div className="navbar-links">
                     <Link className="navbar-item" to="/">Accueil</Link>
                     <Link className="navbar-item" to="/skills">Tableau des compétences</Link>
-                    <Link className="navbar-item" to="/api/participants/${studentId}">Profil des étudiants</Link>
+                    <Link className="navbar-item" to="/participants">Profil des étudiants</Link>
                     {!isLoggedIn ? (
                         <Link className="navbar-item" to="/login">
                             Connexion
@@ -110,7 +69,7 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/skills" element={<SkillsTable config={config}/>} />
-                <Route path="/api/participants/${studentId}" element={<StudentProfile />} />
+                <Route path="/participants/:discordId" element={<StudentProfile />} />
                 {isLoggedIn && <Route path="/add" element={<AddSkill />} />}
             </Routes>
         </Router>
