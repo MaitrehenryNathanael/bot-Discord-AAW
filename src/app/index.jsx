@@ -82,7 +82,7 @@ const App = () => {
             <nav className="navbar">
                 <div className="navbar-links">
                     <Link className="navbar-item" to="/">Accueil</Link>
-                    <Link className="navbar-item" to="/skills">Tableau des compétences</Link>
+                    <Link className="navbar-item" to="/skills">Tableau des étudiants</Link>
                     {!isLoggedIn ? (
                         <Link className="navbar-item" to="/login">
                             Connexion

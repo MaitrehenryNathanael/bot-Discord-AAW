@@ -7,6 +7,7 @@ const SkillsTable = ({ config }) => {
     const [filteredStudents, setFilteredStudents] = useState([]);
     const [headers, setHeaders] = useState([]);
     const [searchQuery, setSearchQuery] = useState('');
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         // Fetch des données depuis Sheety
@@ -38,7 +39,8 @@ const SkillsTable = ({ config }) => {
                 setStudents(studentsData);
                 setFilteredStudents(studentsData); // Initialisation de la liste filtrée
             })
-            .catch(error => console.error('Erreur lors de la récupération des étudiants :', error));
+            .catch(error => console.error('Erreur lors de la récupération des étudiants :', error))
+            .finally(() => setLoading(false)); // Fin du chargement
     }, [config]);
 
     // Gestion de la recherche
@@ -52,15 +54,39 @@ const SkillsTable = ({ config }) => {
 
     return (
         <div className="skills-container">
-            <h2>Tableau des Étudiants</h2>
+
             {/* Barre de recherche */}
-            <input
-                type="text"
-                placeholder="Rechercher par nom..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="search-bar"
-            />
+            <div className="search-bar-container">
+                <input
+                    type="text"
+                    placeholder="Rechercher par nom..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="search-bar"
+                />
+                {searchQuery && (
+                    <button
+                        className="clear-button"
+                        onClick={() => setSearchQuery('')}
+                    >
+                        ✖
+                    </button>
+                )}
+            </div>
+
+            {/* Message de chargement */}
+            {loading && (
+                <p className="loading-message">Chargement des données...</p>
+            )}
+
+            {/* Message si aucun étudiant trouvé */}
+            {!loading && filteredStudents.length === 0 && (
+                <p className="no-results-message">Aucun étudiant ne correspond à votre recherche.</p>
+            )}
+
+
+            {/* Tableau */}
+            {!loading && filteredStudents.length > 0 && (
             <table>
                 <thead>
                 <tr>
@@ -81,6 +107,7 @@ const SkillsTable = ({ config }) => {
                 ))}
                 </tbody>
             </table>
+            )}
         </div>
     );
 };
