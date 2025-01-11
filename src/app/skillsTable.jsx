@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
-import '../styles/styles.scss'; // Assurez-vous d'importer les styles nécessaires
+import '../styles/styles.scss';
+import {Link} from "react-router-dom"; // Assurez-vous d'importer les styles nécessaires
 
 const SkillsTable = ({ config }) => {
     const [students, setStudents] = useState([]);
@@ -66,7 +67,9 @@ const SkillsTable = ({ config }) => {
                 <tbody>
                 {filteredStudents.map((student, index) => (
                     <tr key={index}>
-                        <td>{student.name}</td>
+                        <td>
+                            <Link to={`/participants/${student.discordId}`}>{student.name}</Link>
+                        </td>
                         <td>{student.discordId}</td>
                         <td>{student.lastUpdate}</td>
                     </tr>
