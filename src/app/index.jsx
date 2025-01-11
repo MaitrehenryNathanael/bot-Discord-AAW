@@ -37,14 +37,52 @@ const Login = ({ setIsLoggedIn }) => {
 
 // Composant principal
 const App = () => {
+    const [students, setStudents] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    useEffect(() => {
+
+        //const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${config.SPREADSHEET_SHEETNAME}!${config.SPREADSHEET_DATA}?key=${config.SPREADSHEET_KEY}`;
+        //console.log("URL utilisée :", url);
+
+        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${config.SPREADSHEET_SHEETNAME}!${config.SPREADSHEET_DATA}?key=${config.SPREADSHEET_KEY}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Erreur HTTP : ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                if (!data.values || data.values.length === 0) {
+                    console.error("Aucune donnée disponible dans la feuille.");
+                    return;
+                }
+
+                //console.log("Données récupérées :", data.values);
+                // Traitez les données ici, par exemple :
+                const rows = data.values || [];
+                rows.forEach(row => {
+                    //console.log(row); // Chaque `row` est une ligne du tableau
+                });
+
+
+                const studentsData = rows.slice(1).map(row => ({
+                    name: row[0],
+                    discordId: row[1],
+                    lastUpdate: row[2],
+                }));
+                setStudents(studentsData); // Mettez à jour l'état avec les données des étudiants
+            })
+            .catch(error => {
+                console.error("Erreur lors de la récupération des données :", error);
+            });
+    }, []); // Dépendances vides pour exécuter la requête au montage du composant
+
     return (
         <Router>
             <nav className="navbar">
                 <div className="navbar-links">
                     <Link className="navbar-item" to="/">Accueil</Link>
                     <Link className="navbar-item" to="/skills">Tableau des compétences</Link>
-                    <Link className="navbar-item" to="/participants">Profil des étudiants</Link>
                     {!isLoggedIn ? (
                         <Link className="navbar-item" to="/login">
                             Connexion
@@ -69,7 +107,7 @@ const App = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/skills" element={<SkillsTable config={config}/>} />
-                <Route path="/participants/:discordId" element={<StudentProfile />} />
+                <Route path="/student-profile/:discordId" element={<StudentProfile students={students} />} />
                 {isLoggedIn && <Route path="/add" element={<AddSkill />} />}
             </Routes>
         </Router>

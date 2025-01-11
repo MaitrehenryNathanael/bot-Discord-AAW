@@ -47,6 +47,7 @@ app.get('/api/skills', (req, res) => {
         });
 });
 
+/*
 // Route pour obtenir tous les participants
 app.get('/api/participants', (req, res) => {
     res.json(participants);
@@ -107,6 +108,15 @@ app.post('/api/participants', (req, res) => {
 function generateNewParticipantId() {
     return participants.length ? Math.max(participants.map(p => p.id)) + 1 : 1;
 }
+
+*/
+// Endpoint pour une route spécifique
+app.get('/student-profile/:discordId', (req, res) => {
+    //const studentData = {}; // Remplacez par les vraies données.
+    res.sendFile(path.join(__dirname, 'build', 'index.html'));
+});
+
+
 
 // Routes API pour servir l'application React
 app.get("/*", (req, res) => {

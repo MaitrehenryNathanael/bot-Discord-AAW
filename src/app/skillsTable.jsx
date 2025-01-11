@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import '../styles/styles.scss';
-import {Link} from "react-router-dom"; // Assurez-vous d'importer les styles nécessaires
+import {Link, useNavigate} from "react-router-dom"; // Assurez-vous d'importer les styles nécessaires
 
 const SkillsTable = ({ config }) => {
     const [students, setStudents] = useState([]);
@@ -15,8 +15,10 @@ const SkillsTable = ({ config }) => {
             .then(data => {
                 const rows = data.values || [];
 
-                // Garder seulement les 3 premières colonnes: Name, Discord ID, Last Update
+                // Garder seulement les 3 premières colonnes : Name, Discord ID, Last Update
                 const newHeaders = rows[0].slice(0, 3); // Limiter les en-têtes aux 3 premières colonnes
+                //console.log("newheader",newHeaders);
+
                 setHeaders(newHeaders);  // Définir les nouveaux en-têtes
 
                 const studentsData = rows.slice(1).map(row => {
@@ -26,10 +28,13 @@ const SkillsTable = ({ config }) => {
                         discordId: row[1],
                         lastUpdate: row[2],
                     };
-
+                    //console.log("student",student);
+                    //console.log("student name",student.name);
+                    //console.log("student discord",student.discordId);
                     return student;
                 });
-
+                //console.log("setstudentdata",setStudents(studentsData));
+                //console.log("setfiltereddata",setFilteredStudents(studentsData));
                 setStudents(studentsData);
                 setFilteredStudents(studentsData); // Initialisation de la liste filtrée
             })
@@ -68,7 +73,7 @@ const SkillsTable = ({ config }) => {
                 {filteredStudents.map((student, index) => (
                     <tr key={index}>
                         <td>
-                            <Link to={`/participants/${student.discordId}`}>{student.name}</Link>
+                            <Link to={`/student-profile/${student.discordId}`}>{student.name}</Link>
                         </td>
                         <td>{student.discordId}</td>
                         <td>{student.lastUpdate}</td>
