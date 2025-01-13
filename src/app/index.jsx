@@ -30,6 +30,13 @@ const Login = ({ setIsLoggedIn }) => {
                     Se connecter via Discord
                 </button>
             </div>
+            <div className="clouds">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 160">
+                    <path fill="#f7c9ff" fill-opacity="1"
+                          d="M0,128L30,112C60,96,120,64,180,64C240,64,300,112,360,112C420,112,480,64,540,64C600,64,660,96,720,96C780,96,840,64,900,64C960,64,1020,96,1080,96C1140,96,1200,64,1260,64C1320,64,1380,96,1410,112L1440,128L1440,160L1410,160C1380,160,1320,160,1260,160C1200,160,1140,160,1080,160C1020,160,960,160,900,160C840,160,780,160,720,160C660,160,600,160,540,160C480,160,420,160,360,160C300,160,240,160,180,160C120,160,60,160,30,160L0,160Z"></path>
+                </svg>
+            </div>
+
         </div>
     );
 };
@@ -76,6 +83,28 @@ const App = () => {
                 console.error("Erreur lors de la récupération des données :", error);
             });
     }, []); // Dépendances vides pour exécuter la requête au montage du composant
+
+    useEffect(() => {
+        // Effet de trace de souris
+        const handleMouseMove = (e) => {
+            const dust = document.createElement("div");
+            dust.classList.add("dust");
+            dust.style.left = `${e.pageX}px`;
+            dust.style.top = `${e.pageY}px`;
+            document.body.appendChild(dust);
+
+            // Supprimer la poussière après une courte durée
+            setTimeout(() => {
+                dust.remove();
+            }, 300); // La poussière disparaît après 0.3 secondes
+        };
+
+        document.addEventListener("mousemove", handleMouseMove);
+
+        return () => {
+            document.removeEventListener("mousemove", handleMouseMove);
+        };
+    }, []);
 
     return (
         <Router>

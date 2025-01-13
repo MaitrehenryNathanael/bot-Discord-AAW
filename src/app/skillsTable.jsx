@@ -52,6 +52,28 @@ const SkillsTable = ({ config }) => {
         setFilteredStudents(filtered);
     }, [searchQuery, students]);
 
+    useEffect(() => {
+        // Effet de trace de souris
+        const handleMouseMove = (e) => {
+            const dust = document.createElement("div");
+            dust.classList.add("dust");
+            dust.style.left = `${e.pageX}px`;
+            dust.style.top = `${e.pageY}px`;
+            document.body.appendChild(dust);
+
+            // Supprimer la poussière après une courte durée
+            setTimeout(() => {
+                dust.remove();
+            }, 300); // La poussière disparaît après 0.3 secondes
+        };
+
+        document.addEventListener("mousemove", handleMouseMove);
+
+        return () => {
+            document.removeEventListener("mousemove", handleMouseMove);
+        };
+    }, []);
+
     return (
         <div className="skills-container">
 
@@ -87,26 +109,26 @@ const SkillsTable = ({ config }) => {
 
             {/* Tableau */}
             {!loading && filteredStudents.length > 0 && (
-            <table>
-                <thead>
-                <tr>
-                    {headers.map((header, index) => (
-                        <th key={index}>{header}</th>
-                    ))}
-                </tr>
-                </thead>
-                <tbody>
-                {filteredStudents.map((student, index) => (
-                    <tr key={index}>
-                        <td>
-                            <Link to={`/student-profile/${student.discordId}`}>{student.name}</Link>
-                        </td>
-                        <td>{student.discordId}</td>
-                        <td>{student.lastUpdate}</td>
+                <table>
+                    <thead>
+                    <tr>
+                        {headers.map((header, index) => (
+                            <th key={index}>{header}</th>
+                        ))}
                     </tr>
-                ))}
-                </tbody>
-            </table>
+                    </thead>
+                    <tbody>
+                    {filteredStudents.map((student, index) => (
+                        <tr key={index}>
+                            <td>
+                                <Link to={`/student-profile/${student.discordId}`}>{student.name}</Link>
+                            </td>
+                            <td>{student.discordId}</td>
+                            <td>{student.lastUpdate}</td>
+                        </tr>
+                    ))}
+                    </tbody>
+                </table>
             )}
         </div>
     );
