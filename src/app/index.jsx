@@ -13,12 +13,38 @@ const config = require('../../config.json');
 
 
 const Login = ({ setIsLoggedIn }) => {
-    const navigate = useNavigate();
+    const navigate = useNavigate();  // Utilisation de useNavigate pour rediriger après la connexion
+    const discordAuthUrl = "https://discord.com/api/oauth2/authorize?client_id=1296092844582375475&redirect_uri=http://localhost:3000/auth/discord/callback&response_type=code&scope=identify";
 
-    const handleLogin = () => {
-        // Simulez une connexion utilisateur
-        setIsLoggedIn(true);
-        navigate("/"); // Redirige l'utilisateur vers la page d'accueil
+    const fetchDataFromDiscord = async (code) => {
+        try {
+            // Appeler le backend pour traiter le code et obtenir les données utilisateur
+
+            const response = await fetch(`/auth/discord/callback?code=${code}`);
+            const data = await response.json();
+
+            if (data && data.success) {
+                // L'utilisateur est connecté, met à jour l'état et redirige vers la page d'accueil
+                setIsLoggedIn(true);
+                navigate("/");  // Rediriger vers la page d'accueil
+            }
+        } catch (error) {
+            console.error("Erreur lors de l'authentification Discord:", error);
+        }
+    };
+
+    useEffect(() => {
+        const queryParams = new URLSearchParams(window.location.search);
+        const code = queryParams.get("code");
+
+        if (code) {
+            fetchDataFromDiscord(code);
+        }
+    }, [navigate, setIsLoggedIn]);
+
+
+    const handleDiscordLogin = () => {
+        window.location.href = discordAuthUrl; // Lien vers l'authentification Discord
     };
 
     return (
@@ -26,9 +52,11 @@ const Login = ({ setIsLoggedIn }) => {
             <div className="login-form">
                 <h2>Connexion</h2>
                 <p>Veuillez vous connecter pour accéder à votre compte</p>
-                <button onClick={handleLogin} className="submit-button">
-                    Se connecter via Discord
-                </button>
+                <a onClick={handleDiscordLogin} className="discord-login-link">
+                    <button className="submit-button">
+                        Se connecter via Discord
+                    </button>
+                </a>
             </div>
         </div>
     );
