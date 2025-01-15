@@ -1,5 +1,6 @@
 const express = require('express')
 const app = express()
+const cookieParser = require("cookie-parser");
 const port = 3000
 const path = require('path');
 
@@ -13,8 +14,11 @@ const client = new Discord.Client({ intents: [
 const cors = require('cors');
 app.use(cors());
 
+
 app.use(express.json());
 app.use(express.static(path.join(__dirname, "public")));
+app.use(cookieParser()); // Middleware pour traiter les cookies
+
 
 let participants = []; // Remplissez avec les données actuelles de Sheety ou une autre source
 let skills = []; // Remplissez avec les données actuelles de Sheety ou une autre source
@@ -38,13 +42,73 @@ const pgClient = new pg.Client(process.env.POSTGRESQL_ADDON_URI);
 //Connection à la base de données
 pgClient.connect();
 
+// Middleware pour vérifier les sessions
+app.use("/*", async (req, res, next) => {
+
+
+     sessionCookie = req.cookies.sessionId; // Récupère le cookie de session
+    if (!sessionCookie) {
+        console.log("Aucun cookie de session trouvé.");
+        return next(); // Poursuit sans utilisateur connecté
+    }
+
+    try {
+        // Requête pour vérifier la session dans la base de données
+        const result = await pgClient.query({
+            name: "validate-session",
+            text: 'SELECT "idDiscord", "finSession" FROM session WHERE "idSession" = $1',
+            values: [sessionCookie]  // sessionCookie est l'UUID à rechercher
+        });
+
+        if (result.rows.length === 0) {
+            console.log("Session invalide ou expirée.");
+            res.clearCookie('sessionId'); // Supprime le cookie expiré
+            return next(); // Aucune session valide trouvée
+        }
+
+        const session = result.rows[0];
+
+        let expirationTime = new Date(session.finSession);
+        if (new Date() > expirationTime) {
+            console.log("Session expirée.");
+            // Supprimer la session expirée de la base de données
+            await pgClient.query({
+                name: "delete-expired-session",
+                text: "DELETE FROM session WHERE idSession = $1",
+                values: [sessionCookie],
+            });
+            res.clearCookie('sessionId'); // Supprimer le cookie
+            return next(); // Session expirée
+        }
+
+        // Session valide, vous pouvez maintenant ajouter l'idDiscord à la requête
+        req.idDiscord = session.idDiscord;  // Ajout de l'idDiscord dans la requête
+        console.log(`Utilisateur connecté avec idDiscord : ${req.idDiscord}`);
+
+        console.log("Session actuelle:", sessionCookie);
+        console.log("Expiration de la session:", expirationTime);
+        console.log("Comparaison avec l'heure actuelle:", new Date());
+
+        next();
+    } catch (error) {
+        console.error("Erreur lors de la vérification de la session :", error);
+        next(); // Continuer sans utilisateur
+    }
+
+
+
+});
+
+
+//ancien code
+/*
 app.use("/*", (req,res, next)=>{
     //recupere le cookie
-    //verifier la validite
+    //verifier la validite avec le timer
     //recupere user discord via idDiscord
     //req.user = userRecupere
     next();
-})
+})*/
 
 function setHeaders(headers) {
     // Ici, vous pouvez manipuler ou utiliser les en-têtes comme bon vous semble
@@ -191,6 +255,32 @@ const sessions = async () => {
     }
 }
 
+app.get('/auth/check-session', (req, res) => {
+    console.log("Cookies reçus:", req.cookies); // Ajoutez ce log pour inspecter les cookies
+    const sessionId = req.cookies.sessionId;
+    console.log(sessionId);
+    if (!sessionId) {
+        return res.json({ loggedIn: false });
+    }
+
+    pgClient.query(
+        'SELECT * FROM session WHERE "idSession" = $1 AND "finSession" > NOW()',
+        [sessionId],
+        (err, result) => {
+            if (err) {
+                console.error("Erreur lors de la requête PostgreSQL:", err);
+                return res.json({ loggedIn: false });
+            }
+            if (result.rowCount === 0) {
+                console.log("Aucune session valide trouvée.");
+                return res.json({ loggedIn: false });
+            }
+            console.log("Session trouvée:", result.rowCount);
+            res.json({ loggedIn: true });
+        }
+    );
+
+});
 
 
 // Route de callback pour Discord
@@ -233,7 +323,7 @@ app.get('/auth/discord/callback', async (req, res) => {
             headers: { Authorization: `Bearer ${tokenData.access_token}` },
         });
 
-
+        console.log('Réponse de Discord pour les informations utilisateur :', userResponse);
         const userData = await userResponse.data;
         console.log('Utilisateur reçu :', userData);
 
@@ -252,8 +342,15 @@ app.get('/auth/discord/callback', async (req, res) => {
         await addSession({idSession,idDiscord,dateInFrenchTimezone});
         //setCookie id Aleatoire genere
 
+        // Option 1 : Utiliser un cookie pour conserver la session
+        res.cookie('sessionId', idSession, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            maxAge: VALIDITY_TIME_MIN * 60 * 1000 + VALIDITY_TIME_SEC * 1000,
+        });
 
-        res.redirect("/");
+
+       res.redirect("/");
     } catch (error) {
         console.error('Erreur lors de la connexion Discord :', error.message);
         res.status(500).send('Erreur lors de la connexion à Discord.');
@@ -270,4 +367,17 @@ app.get('/student-profile/:discordId', (req, res) => {
 // Routes API pour servir l'application React
 app.get("/*", (req, res) => {
     res.sendFile(path.join(__dirname, "public", "index.html"));
+});
+
+
+
+app.post('/auth/logout', (req, res) => {
+    req.session.destroy((err) => {
+        if (err) {
+            return res.status(500).send("Erreur lors de la déconnexion");
+        }
+        // Supprimer le cookie de session
+        res.clearCookie('sessionId');
+        res.send("Déconnexion réussie");
+    });
 });

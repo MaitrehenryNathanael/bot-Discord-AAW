@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom/client';
-import {BrowserRouter as Router, Routes, Route, Link, useParams, useNavigate} from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link, useNavigate } from 'react-router-dom';
 import '../styles/styles.scss';
-
 
 // Importer le composant Home (accueil)
 import Home from "./Home";
@@ -11,22 +10,22 @@ import SkillsTable from "./skillsTable";
 import StudentProfile from './StudentProfile';
 const config = require('../../config.json');
 
-
 const Login = ({ setIsLoggedIn }) => {
-    const navigate = useNavigate();  // Utilisation de useNavigate pour rediriger après la connexion
+    const navigate = useNavigate();
     const discordAuthUrl = "https://discord.com/api/oauth2/authorize?client_id=1296092844582375475&redirect_uri=http://localhost:3000/auth/discord/callback&response_type=code&scope=identify";
 
     const fetchDataFromDiscord = async (code) => {
         try {
-            // Appeler le backend pour traiter le code et obtenir les données utilisateur
+            const response = await fetch(`/auth/discord/callback?code=${code}`, {
+                method: "GET",
+                credentials: "include",
+            });
 
-            const response = await fetch(`/auth/discord/callback?code=${code}`);
             const data = await response.json();
 
             if (data && data.success) {
-                // L'utilisateur est connecté, met à jour l'état et redirige vers la page d'accueil
-                setIsLoggedIn(true);
-                navigate("/");  // Rediriger vers la page d'accueil
+                setIsLoggedIn(true); // Met à jour l'état global
+                //navigate("/"); // Redirige après la connexion
             }
         } catch (error) {
             console.error("Erreur lors de l'authentification Discord:", error);
@@ -40,11 +39,10 @@ const Login = ({ setIsLoggedIn }) => {
         if (code) {
             fetchDataFromDiscord(code);
         }
-    }, [navigate, setIsLoggedIn]);
-
+    }, [setIsLoggedIn]);
 
     const handleDiscordLogin = () => {
-        window.location.href = discordAuthUrl; // Lien vers l'authentification Discord
+        window.location.href = discordAuthUrl;
     };
 
     return (
@@ -52,11 +50,9 @@ const Login = ({ setIsLoggedIn }) => {
             <div className="login-form">
                 <h2>Connexion</h2>
                 <p>Veuillez vous connecter pour accéder à votre compte</p>
-                <a onClick={handleDiscordLogin} className="discord-login-link">
-                    <button className="submit-button">
-                        Se connecter via Discord
-                    </button>
-                </a>
+                <button className="submit-button" onClick={handleDiscordLogin}>
+                    Se connecter via Discord
+                </button>
             </div>
         </div>
     );
@@ -67,11 +63,24 @@ const Login = ({ setIsLoggedIn }) => {
 const App = () => {
     const [students, setStudents] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+
     useEffect(() => {
+        console.log("NTM LE REACT");
+        const checkSession = async () => {
+            console.log("TEST DE MALADE");
+            const response = await fetch('/auth/check-session', {
+                credentials: 'include' // Assurez-vous que les cookies sont envoyés avec la requête
+            });
 
-        //const url = `https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${config.SPREADSHEET_SHEETNAME}!${config.SPREADSHEET_DATA}?key=${config.SPREADSHEET_KEY}`;
-        //console.log("URL utilisée :", url);
+            const data = await response.json();
+            console.log(data);
+            setIsLoggedIn(data.loggedIn); // Mettez à jour l'état en fonction de la réponse
+        };
+        checkSession(); // Appel de la fonction dès que le composant est monté
+    }, []);
 
+
+    useEffect(() => {
         fetch(`https://sheets.googleapis.com/v4/spreadsheets/${config.SPREADSHEET_ID}/values/${config.SPREADSHEET_SHEETNAME}!${config.SPREADSHEET_DATA}?key=${config.SPREADSHEET_KEY}`)
             .then(response => {
                 if (!response.ok) {
@@ -85,48 +94,30 @@ const App = () => {
                     return;
                 }
 
-                //console.log("Données récupérées :", data.values);
-                // Traitez les données ici, par exemple :
-                const rows = data.values || [];
-                rows.forEach(row => {
-                    //console.log(row); // Chaque `row` est une ligne du tableau
-                });
-
-
-                const studentsData = rows.slice(1).map(row => ({
+                const studentsData = data.values.slice(1).map(row => ({
                     name: row[0],
                     discordId: row[1],
                     lastUpdate: row[2],
                 }));
-                setStudents(studentsData); // Mettez à jour l'état avec les données des étudiants
+                setStudents(studentsData);
             })
             .catch(error => {
                 console.error("Erreur lors de la récupération des données :", error);
             });
-    }, []); // Dépendances vides pour exécuter la requête au montage du composant
+    }, []);
 
     return (
-        <Router>
+        <Router> {/* Assurez que <Router> englobe tout */}
             <nav className="navbar">
                 <div className="navbar-links">
                     <Link className="navbar-item" to="/">Accueil</Link>
                     <Link className="navbar-item" to="/skills">Tableau des étudiants</Link>
                     {!isLoggedIn ? (
-                        <Link className="navbar-item" to="/login">
-                            Connexion
-                        </Link>
+                        <Link className="navbar-item" to="/login">Connexion</Link>
                     ) : (
                         <>
-                            <Link className="navbar-item" to="/add">
-                                Ajouter
-                            </Link>
-                            <Link
-                                className="navbar-item"
-                                to="/"
-                                onClick={() => setIsLoggedIn(false)}
-                            >
-                                Déconnexion
-                            </Link>
+                            <Link className="navbar-item" to="/add">Ajouter</Link>
+                            <Link className="navbar-item" to="/" onClick={() => setIsLoggedIn(false)}>Déconnexion</Link>
                         </>
                     )}
                 </div>
@@ -134,7 +125,7 @@ const App = () => {
             <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
-                <Route path="/skills" element={<SkillsTable config={config}/>} />
+                <Route path="/skills" element={<SkillsTable config={config} />} />
                 <Route path="/student-profile/:discordId" element={<StudentProfile students={students} />} />
                 {isLoggedIn && <Route path="/add" element={<AddSkill />} />}
             </Routes>
