@@ -65,9 +65,7 @@ const App = () => {
     const [isLoggedIn, setIsLoggedIn] = useState(false);
 
     useEffect(() => {
-        console.log("NTM LE REACT");
         const checkSession = async () => {
-            console.log("TEST DE MALADE");
             const response = await fetch('/auth/check-session', {
                 credentials: 'include' // Assurez-vous que les cookies sont envoyés avec la requête
             });
