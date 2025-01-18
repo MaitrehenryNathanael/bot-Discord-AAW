@@ -1,0 +1,559 @@
+// src/styles/styles.scss
+
+// Variables SASS
+$primary-color: #e929b2;
+$secondary-color: #960b6e;
+$font-family: "Comic Sans MS", fantasy;
+
+// Réinitialisation des marges et paddings par défaut
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+// animation de scintillement
+@keyframes scintillement {
+  0%, 100% {
+    opacity: 1; // Pleinement visible
+  }
+  50% {
+    opacity: 0.5; // Moins visible au milieu du cycle
+  }
+}
+
+// Application de la police globale
+body {
+  font-family: $font-family;
+  line-height: 1.6;
+  background-color: #f4f4f4;
+  color: #333;
+}
+
+// cursor personnalisé
+body, a, button, input, textarea {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='fill:pink;'%3E%3Ctext y='28' font-size='30'%3E🌸%3C/text%3E%3C/svg%3E") 16 16, auto;
+}
+
+// Trace de poussière
+.dust {
+  position: absolute;
+  width: 8px;
+  height: 5px;
+  background-color: $secondary-color;
+  border-radius: 50%;
+  pointer-events: none;
+  opacity: 0;
+  animation: dustAnimation 0.5s forwards;
+}
+
+// animation pour le cursor
+@keyframes dustAnimation {
+  0% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.5;
+  }
+  100% {
+    transform: scale(2);
+    opacity: 0;
+  }
+}
+
+// Style de la barre de navigation
+.navbar {
+  background-color: $primary-color;
+  padding: 10px 20px; // Ajuster le padding pour s'assurer que le contenu est bien espacé
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+  width: 100%;
+
+  .navbar-links {
+    display: flex;
+    justify-content: space-between; // Espace entre les éléments
+    align-items: center;
+    list-style: none;
+
+    .navbar-item {
+      color: white;
+      text-decoration: none;
+      font-size: 1.4rem;
+      padding: 5px 75px;
+      transition: color 0.3s ease;
+
+      &:hover {
+        color: $secondary-color;
+      }
+    }
+  }
+}
+
+// pluie d'étoiles
+.starry-background {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden; // Évite les débordements
+  z-index: -1; // Derrière tout le contenu
+}
+
+.star {
+  position: absolute;
+  top: -10px; // Commence hors de l'écran
+  background-color: $secondary-color;
+  border-radius: 50%;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.8);
+  animation: fall 5s linear infinite; // Animation de chute infinie
+}
+
+@keyframes fall {
+  0% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh); // Descend toute la hauteur de la fenêtre
+    opacity: 0; // Devient invisible en bas
+  }
+}
+
+.star {
+  &.small {
+    width: 2px;
+    height: 2px;
+    animation-duration: 3s; // Petites étoiles tombent plus vite
+  }
+
+  &.medium {
+    width: 4px;
+    height: 4px;
+    animation-duration: 4s;
+  }
+
+  &.large {
+    width: 6px;
+    height: 6px;
+    animation-duration: 5s;
+  }
+}
+
+// Style pour la page d'accueil
+.home-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;  // Assure que la page prend toute la hauteur de l'écran
+  background-color: #f4f4f4;  // Fond gris clair
+}
+
+.content-box {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;  // Coins arrondis
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  // Ombre légère pour donner de la profondeur
+  width: 100%;
+  max-width: 700px;  // Limite la largeur du conteneur
+
+  h1 {
+    color: $primary-color;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2.5rem;
+    animation: scintillement 1.5s infinite;
+  }
+
+  p {
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+  }
+}
+
+.login-container {
+  h2 {
+    animation: scintillement 1.5s infinite;
+  }
+}
+
+// Styles supplémentaires pour d'autres sections
+.skills-container, .login-container, .student-container {
+  padding: 20px;
+  margin-top: 70px; // Espacement pour la navbar fixe
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
+  .search-bar-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 20px 0;
+
+    .search-bar {
+      width: 300px; /* Largeur de la barre de recherche */
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+    }
+
+    .clear-button {
+      margin-left:-15px;
+      margin-bottom: 17px;
+      background: none;
+      border: none;
+      font-size: 16px;
+      //cursor: pointer;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='fill:pink;'%3E%3Ctext y='28' font-size='30'%3E🌸%3C/text%3E%3C/svg%3E") 16 16, auto;
+
+      color: #888;
+
+
+      &:hover {
+        color: #000;
+      }
+    }
+  }
+
+  .loading-message,
+  .no-results-message {
+    margin: 20px 0;
+    font-size: 16px;
+    color: #555;
+    text-align: center;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+
+    th {
+      background-color: $primary-color;  // Applique la couleur principale verte
+      color: white;  // Texte blanc pour un meilleur contraste
+      padding: 8px;
+      text-align: left;
+      font-weight: bold;
+    }
+
+    td {
+      border: 1px solid #ddd;
+      padding: 8px;
+      text-align: left;
+    }
+  }
+}
+
+.search-bar {
+  margin-bottom: 20px;
+  padding: 8px;
+  width: 100%;
+  max-width: 400px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 1rem;
+}
+
+// nuage
+.clouds {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  overflow: hidden;
+  line-height: 0;
+}
+
+.clouds svg {
+  position: relative;
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+
+// Style pour le bouton de connexion
+button {
+  background-color: $primary-color;
+  color: white;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  border: none;
+  border-radius: 5px;
+ // cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  font-family: "Comic Sans MS", fantasy;
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='fill:pink;'%3E%3Ctext y='28' font-size='30'%3E🌸%3C/text%3E%3C/svg%3E") 16 16, auto;
+
+
+  &:hover {
+    background-color: $secondary-color;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    background-color: darken($secondary-color, 10%);
+    transform: scale(0.98);
+  }
+
+  &:focus {
+    outline: 2px solid lighten($primary-color, 20%);
+    outline-offset: 2px;
+  }
+}
+
+// Style pour la gestion des compétences
+.skills-manager {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;  // Centre verticalement
+  align-items: center;  // Centre horizontalement
+  max-width: 800px;
+  margin: 0 auto;  // Centrage horizontal
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  min-height: 100vh;  // Prend toute la hauteur de la fenêtre
+
+  h2 {
+    text-align: center;
+    margin-bottom: 20px;
+    color: #333;
+    font-size: 2rem;
+  }
+
+  .modify-skills,
+  .add-skill {
+    margin-bottom: 30px;
+  }
+
+  h3 {
+    margin-bottom: 15px;
+    color: $primary-color;
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+
+  .skills-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+
+    th, td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      text-align: left;
+      font-size: 1.1rem;
+    }
+
+    th {
+      background-color: $primary-color;
+      color: white;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    input {
+      width: 60px;
+      padding: 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-size: 1rem;
+    }
+
+    .modify-button {
+      background-color: #2196F3;
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 4px;
+      //cursor: pointer;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='fill:pink;'%3E%3Ctext y='28' font-size='30'%3E🌸%3C/text%3E%3C/svg%3E") 16 16, auto;
+
+
+      &:hover {
+        background-color: #0b7dda;
+      }
+    }
+  }
+
+  .no-skills-message {
+    color: #999;
+    font-style: italic;
+  }
+
+  form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+
+      label {
+        font-weight: bold;
+        color: #333;
+        margin-bottom: 5px;
+        font-size: 1.1rem;
+      }
+
+      input {
+        padding: 8px;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin: 4px;
+        font-size: 1rem;
+      }
+    }
+
+    .add-button {
+      background-color: $primary-color;
+      color: white;
+      border: none;
+      padding: 10px 15px;
+      border-radius: 4px;
+      //cursor: pointer;
+      cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='fill:pink;'%3E%3Ctext y='28' font-size='30'%3E🌸%3C/text%3E%3C/svg%3E") 16 16, auto;
+
+      &:hover {
+        background-color: $secondary-color;
+      }
+    }
+  }
+}
+
+
+// Style pour la page de connexion
+.login-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;  // Assure que la page prend toute la hauteur de l'écran
+  background-color: #f4f4f4;  // Fond gris clair
+}
+
+.login-form {
+  background-color: white;
+  padding: 40px;
+  border-radius: 10px;  // Coins arrondis
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  // Ombre légère pour donner de la profondeur
+  width: 100%;
+  max-width: 600px;  // Limite la largeur du formulaire
+
+  h2 {
+    color: $primary-color;
+    text-align: center;
+    margin-bottom: 20px;
+    font-size: 2rem;
+  }
+
+  p {
+    color: #555;
+    text-align: center;
+    margin-bottom: 30px;
+    font-size: 1.2rem;
+  }
+
+  .submit-button {
+    background-color: $primary-color;
+    color: white;
+    border: none;
+    padding: 12px;
+    width: 100%;
+    font-size: 1.2rem;
+    border-radius: 4px;
+    //cursor: pointer;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='fill:pink;'%3E%3Ctext y='28' font-size='30'%3E🌸%3C/text%3E%3C/svg%3E") 16 16, auto;
+
+    transition: background-color 0.3s, transform 0.2s;
+
+    &:hover {
+      background-color: $secondary-color;
+      transform: scale(1.05);
+    }
+
+    &:active {
+      background-color: darken($secondary-color, 10%);
+      transform: scale(0.98);
+    }
+  }
+}
+
+.student-profile-container {
+  padding: 20px;
+  margin-top: 70px; // Pour éviter le chevauchement avec la navbar fixe
+  text-align: center;
+
+  h2 {
+    margin-bottom: 20px;
+    font-size: 2rem;
+    color: $primary-color;
+  }
+
+  .back-button {
+    margin-bottom: 20px;
+    padding: 10px 20px;
+    margin-top: 20px;
+    background-color: $secondary-color;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 1rem;
+    //cursor: pointer;
+    cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewport='0 0 100 100' style='fill:pink;'%3E%3Ctext y='28' font-size='30'%3E🌸%3C/text%3E%3C/svg%3E") 16 16, auto;
+
+    transition: background-color 0.3s;
+
+    &:hover {
+      background-color: lighten($secondary-color, 10%);
+    }
+  }
+
+  table {
+    width: 100%;
+    max-width: 800px;
+    margin: 0 auto; // Centrer le tableau
+    border-collapse: collapse;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+
+    th {
+      background-color: $primary-color;
+      color: white;
+      text-align: left;
+      padding: 10px;
+      text-transform: uppercase;
+      font-size: 0.9rem;
+    }
+
+    td {
+      border: 1px solid #ddd;
+      padding: 10px;
+      font-size: 0.9rem;
+      text-align: left;
+      color: #333;
+    }
+
+    tr:nth-child(even) {
+      background-color: #f9f9f9; // Ligne alternée
+    }
+
+    tr:hover {
+      background-color: #f1f1f1; // Survol des lignes
+    }
+  }
+}
