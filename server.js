@@ -608,14 +608,16 @@ app.get('/auth/discord/callback', async (req, res) => {
 
     try {
         // Échange du code contre un jeton d'accès
+        console.log(process.env.CLIENT_ID);
+        console.log(process.env.CLIENT_ID);
         const tokenResponse = await axios.post(
             'https://discord.com/api/oauth2/token',
             new URLSearchParams({
-                client_id: process.env.CLIENT_ID,
-                client_secret: process.env.CLIENT_SECRET,
+                client_id: CLIENT_ID,
+                client_secret: CLIENT_SECRET,
                 grant_type: 'authorization_code',
                 code: code,
-                redirect_uri: process.env.REDIRECT_URI,
+                redirect_uri: REDIRECT_URI,
             }),
             {
                 headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
