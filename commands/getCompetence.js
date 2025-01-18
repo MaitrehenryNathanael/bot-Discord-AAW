@@ -4,7 +4,7 @@ const config = require('./../config.json');
 module.exports = class getCompetence extends SlashCommandBuilder{
     constructor() {
         super();
-        this.name = 'getcompetence';
+        this.name = 'get-competence';
         this.description ="la commande vous ajoute des competences";
         this.addSubcommand(user =>
             user
@@ -25,7 +25,7 @@ module.exports = class getCompetence extends SlashCommandBuilder{
             let userTarget = interaction.options.getUser('target')
 
             let embed = new EmbedBuilder()
-                .setTitle('competence de '+ userTarget.username)
+                .setTitle('competences de '+ userTarget.username)
                 .setDescription('Voici toute les competences')
                 .setColor('#3498db'); // Couleur hexadécimale
             let fields = []

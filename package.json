@@ -3,6 +3,9 @@
     "discord.js": "^14.16.3",
     "express": "^4.21.1",
     "fs": "^0.0.1-security",
+    "gapi": "^0.0.3",
+    "googleapi": "^1.0.2",
+    "googleapis": "^144.0.0",
     "nodemon": "^3.1.7"
   },
   "name": "projet",
