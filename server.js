@@ -195,6 +195,69 @@ async function updateGoogleSheet(oAuth2Client, discordId, skillName, level, date
 }
 
 
+async function addSkill(oAuth2Client, discordId, skillName, skillValue, date) {
+    const sheets = google.sheets({ version: 'v4', auth: oAuth2Client });
+
+    const spreadsheetId = '12IlZ5US1jQOlQBFj8L1ivkTPtNpEl2uJPygO7L_Y3dI'; // Remplace par ton ID réel
+    const range = 'Remplissage skills!A1:Z100'; // Plage des données
+
+    try {
+        // Récupère les valeurs actuelles de la feuille
+        const response = await sheets.spreadsheets.values.get({
+            spreadsheetId: spreadsheetId,
+            range: range,
+        });
+
+        const rows = response.data.values || [];
+        let skillColumnIndex = -1;
+
+
+        // Vérifie si le skillName existe dans la première ligne (en-tête)
+        if (rows[0].includes(skillName)) {
+            skillColumnIndex = rows[0].indexOf(skillName);
+        } else {
+            // Ajoute la nouvelle compétence dans l'en-tête
+            skillColumnIndex = rows[0].length;
+            rows[0].push(skillName);
+            console.log("skill Column Index : ", skillColumnIndex);
+            // Initialise la colonne entière à 0 pour tous les utilisateurs existants
+            for (let i = 1; i < rows.length; i++) {
+                while (rows[i].length <= skillColumnIndex) {
+                    rows[i].push(''); // Remplit les colonnes manquantes
+                }
+                rows[i][skillColumnIndex] = 0; // Initialise la compétence à 0
+            }
+        }
+
+
+        // Trouve la ligne contenant l'idDiscord
+        let rowIndex = rows.findIndex(row => row[1] === discordId);
+        console.log("Row index:", rowIndex);
+
+        // Met à jour la valeur de la compétence pour l'idDiscord spécifié
+        rows[rowIndex][skillColumnIndex] = skillValue;
+        rows[rowIndex][2] = date;
+        // Mettre à jour la feuille avec les nouvelles données
+        const updateRequest = {
+            spreadsheetId: spreadsheetId,
+            range: range,
+            valueInputOption: 'USER_ENTERED', // Interprétation utilisateur
+            resource: { values: rows },
+        };
+
+        // Effectue la mise à jour
+        const updateResponse = await sheets.spreadsheets.values.update(updateRequest);
+        console.log('Sheet updated successfully:', updateResponse.data);
+
+        if (updateResponse.data && updateResponse.data.updatedRows) {
+            console.log(`Mise à jour de ${updateResponse.data.updatedRows} ligne(s).`);
+        }
+    } catch (error) {
+        console.error('Erreur lors de la mise à jour de la feuille:', error);
+    }
+}
+
+
 
 let idCourant;
 
@@ -229,6 +292,24 @@ app.put('/api/skills/:discordId/:skillName', async (req, res) => {
     }
 });
 
+
+// Route PUT pour gérer la mise à jour des compétences
+app.put('/api/skills', async (req, res) => {
+    const { discordId, skillName, level, date } = req.body;
+
+    if (!discordId || !skillName || level === undefined) {
+        return res.status(400).send({ error: 'Paramètres manquants dans la requête.' });
+    }
+
+    try {
+        const oAuth2Client = await authenticateOAuth2();
+        await addSkill(oAuth2Client, discordId, skillName, level, date);
+        res.status(200).send({ message: 'Compétence mise à jour avec succès.' });
+    } catch (error) {
+        console.error('Erreur dans /api/skills:', error);
+        res.status(500).send({ error: 'Erreur lors de la mise à jour des compétences.' });
+    }
+});
 
 
 
