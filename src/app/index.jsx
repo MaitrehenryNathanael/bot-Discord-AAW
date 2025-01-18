@@ -8,6 +8,7 @@ import Home from "./Home";
 import AddSkill from "./addSkill";
 import SkillsTable from "./skillsTable";
 import StudentProfile from './StudentProfile';
+import SkillsManager from "./addSkill";
 const config = require('../../config.json');
 
 const Login = ({ setIsLoggedIn }) => {
@@ -25,7 +26,6 @@ const Login = ({ setIsLoggedIn }) => {
 
             if (data && data.success) {
                 setIsLoggedIn(true); // Met à jour l'état global
-                //navigate("/"); // Redirige après la connexion
             }
         } catch (error) {
             console.error("Erreur lors de l'authentification Discord:", error);
@@ -63,8 +63,22 @@ const Login = ({ setIsLoggedIn }) => {
 const App = () => {
     const [students, setStudents] = useState([]);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [idCourant, setIdCourant] = useState(null);
 
     useEffect(() => {
+        // Appel à l'API pour récupérer idCourant
+        fetch('/api/current-id')
+            .then(response => response.json())
+            .then(data => {
+                setIdCourant(data.idCourant); // Met à jour le state avec la valeur reçue
+            })
+            .catch(error => {
+                console.error("Erreur lors de la récupération de idCourant :", error);
+            });
+    }, []);
+
+    useEffect(() => {
+
         const checkSession = async () => {
             const response = await fetch('/auth/check-session', {
                 credentials: 'include' // Assurez-vous que les cookies sont envoyés avec la requête
@@ -114,7 +128,7 @@ const App = () => {
                         <Link className="navbar-item" to="/login">Connexion</Link>
                     ) : (
                         <>
-                            <Link className="navbar-item" to="/add">Ajouter</Link>
+                            <Link className="navbar-item" to={`/add/${idCourant}`}>Ajouter</Link>
                             <Link className="navbar-item" to="/" onClick={() => setIsLoggedIn(false)}>Déconnexion</Link>
                         </>
                     )}
@@ -125,7 +139,7 @@ const App = () => {
                 <Route path="/login" element={<Login setIsLoggedIn={setIsLoggedIn} />} />
                 <Route path="/skills" element={<SkillsTable config={config} />} />
                 <Route path="/student-profile/:discordId" element={<StudentProfile students={students} />} />
-                {isLoggedIn && <Route path="/add" element={<AddSkill />} />}
+                {isLoggedIn && <Route path="/add/:discordId" element={<SkillsManager />} />}
             </Routes>
         </Router>
     );

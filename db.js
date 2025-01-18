@@ -20,7 +20,7 @@ db.serialize(() => {
     db.run(`
         CREATE TABLE IF NOT EXISTS session (
                                                id_session TEXT PRIMARY KEY,        -- UUID
-                                               id_discord BIGINT NOT NULL,         -- Identifiant Discord
+                                               id_discord TEXT NOT NULL,         -- Identifiant Discord
                                                fin_session DATE                    -- Date de fin de session
         )
     `, (err) => {
@@ -34,7 +34,7 @@ db.serialize(() => {
     // Table admin
     db.run(`
     CREATE TABLE IF NOT EXISTS admin (
-      id_discord BIGINT PRIMARY KEY       -- Identifiant Discord
+      id_discord TEXT PRIMARY KEY       -- Identifiant Discord
     )
   `, (err) => {
         if (err) {
@@ -44,7 +44,7 @@ db.serialize(() => {
         }
     });
 
-    const adminId = 664134848029655040; // L'ID Discord de l'administrateur à ajouter
+    const adminId = '664134848029655040'; // L'ID Discord de l'administrateur à ajouter
     db.run(`
         INSERT OR IGNORE INTO admin (id_discord)
         VALUES (?)`, [adminId], (err) => {

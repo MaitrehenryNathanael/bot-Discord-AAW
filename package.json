@@ -6,6 +6,8 @@
     "discord.js": "^14.16.3",
     "dotenv": "^16.4.7",
     "express": "^4.21.1",
+    "google-auth-library": "^9.15.0",
+    "googleapis": "^144.0.0",
     "nodemon": "^3.1.7",
     "parcel": "^2.13.0",
     "pg": "^8.13.1",
