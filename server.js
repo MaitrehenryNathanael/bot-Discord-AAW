@@ -10,12 +10,57 @@ const port = 3000;
 const config = require('./config.json');
 const tokens = require('./tokens.json');
 const Discord = require('discord.js');
-const client = new Discord.Client({
-    intents: [
+const fs = require('fs')
+
+const {Collection, REST, Routes} = require('discord.js')
+const client = new Discord.Client({ intents: [
         Discord.GatewayIntentBits.Guilds,
-        Discord.GatewayIntentBits.GuildMessages
-    ]
+        Discord.GatewayIntentBits.GuildMessages,
+        Discord.GatewayIntentBits.MessageContent,
+        Discord.GatewayIntentBits.GuildMembers
+    ]})
+
+
+app.use(cors());
+app.use(express.json());
+
+
+client.commands = new Collection( )
+const commandFiles = fs
+    .readdirSync('./commands')
+    .filter((file) => file.endsWith('.js'))
+const commands = [];
+for (const file of commandFiles) {
+    const command = require(`./commands/${file}`)
+    commands.push(new command)
+}
+
+
+client.on('ready', async () => {
+    console.log(`Je suis prêt !`); // On affiche un message de log dans la console, lorsque le bot est démarré
+    const rest = new REST({version: '10'}).setToken(config.BOT_TOKEN);
+    try {
+        console.log('Enregistrement des commandes slash...');
+        await rest.put(
+            Routes.applicationCommands(client.user.id),
+            {body: commands}
+        );
+        console.log('Les commandes slash ont été enregistrées.');
+    } catch (error) {
+        console.error(error);
+    }
 });
+
+client.on('interactionCreate', async interaction => {
+    if (!interaction.isCommand()) return;
+    const command = commands.filter(c => c.name === interaction.commandName)[0];
+    try {
+        await command.execute(client, interaction);
+    } catch (e) {
+        console.error(e);
+    }
+})
+
 
 // Charger la base de données SQLite
 const dbPath = path.resolve(__dirname, 'bdd.sqlite');
@@ -50,7 +95,6 @@ const VALIDITY_TIME_MIN = process.env.VALIDITY_TIME_MIN
 
 const { google } = require('googleapis');
 const readline = require('readline');
-const fs = require('fs');
 
 // Charger les credentials depuis le fichier
 
@@ -279,7 +323,7 @@ app.put('/api/skills/:discordId/:skillName', async (req, res) => {
 
         // Appel à la fonction updateGoogleSheet
         const result = await  updateGoogleSheet(oAuth2Client, discordId, skillName, level, date);
-        
+
         return res.json({
             message: "Compétence mise à jour avec succès.",
         });
@@ -688,3 +732,5 @@ app.post('/auth/logout', (req, res) => {
         res.send("Déconnexion réussie");
     });
 });
+
+
