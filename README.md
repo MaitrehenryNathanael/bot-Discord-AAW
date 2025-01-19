@@ -1,4 +1,4 @@
 commande bot discord : 
-/set-competance
-/get-competance
-/set-competance-user (only for admin du serveur)
+/set-competence
+/get-competence
+/set-competence-user (only for admin du serveur)
