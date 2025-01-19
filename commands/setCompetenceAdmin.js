@@ -11,7 +11,7 @@ const auth = new google.auth.GoogleAuth({
 module.exports = class setCompetenceAdmin extends SlashCommandBuilder {
     constructor() {
         super();
-        this.name = 'set-competence-user';
+        this.name = 'umnc-set-competence-user';
         this.description = "la commande vous ajoute/met à jour des competences";
         this.setDefaultMemberPermissions(0);
         this.addStringOption(option => option.setName('skill').setDescription('The skill').setRequired(true));

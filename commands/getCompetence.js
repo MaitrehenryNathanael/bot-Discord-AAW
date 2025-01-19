@@ -4,7 +4,7 @@ const config = require('./../config.json');
 module.exports = class getCompetence extends SlashCommandBuilder{
     constructor() {
         super();
-        this.name = 'get-competence';
+        this.name = 'umnc-get-competence';
         this.description ="la commande vous ajoute des competences";
         this.addSubcommand(user =>
             user
