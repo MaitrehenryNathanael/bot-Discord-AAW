@@ -18,6 +18,7 @@ module.exports = class setCompetence extends SlashCommandBuilder {
     }
 
     async execute(client, interaction) {
+        await interaction.deferReply();
         let data = await this.getData();
         let ligne="";
         let column = "";
@@ -79,7 +80,7 @@ module.exports = class setCompetence extends SlashCommandBuilder {
                 embed.addFields(fields);
             }
         }
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 
     async getData(){

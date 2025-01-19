@@ -20,6 +20,7 @@ module.exports = class setCompetenceAdmin extends SlashCommandBuilder {
     }
 
     async execute(client, interaction) {
+        await interaction.deferReply();
         let data = await this.getData();
         let userTarget;
         if (interaction.options.getUser('user') != null){
@@ -87,7 +88,7 @@ module.exports = class setCompetenceAdmin extends SlashCommandBuilder {
                 embed.addFields(fields);
             }
         }
-        await interaction.reply({ embeds: [embed] });
+        await interaction.editReply({ embeds: [embed] });
     }
 
     async getData(){

@@ -20,6 +20,7 @@ module.exports = class getCompetence extends SlashCommandBuilder{
     }
 
     async execute(client, interaction) {
+        await interaction.deferReply();
         let data = await this.getData();
         if(interaction.options.getSubcommand(false) === 'user') {
             let userTarget = interaction.options.getUser('target')
@@ -38,7 +39,7 @@ module.exports = class getCompetence extends SlashCommandBuilder{
                     embed.addFields(fields);
                 }
             }
-            await interaction.reply({ embeds: [embed] });
+            await interaction.editReply({ embeds: [embed] });
 
         }else{
             let embeds = []
@@ -57,7 +58,7 @@ module.exports = class getCompetence extends SlashCommandBuilder{
             }
             for (let i = 0; i < embeds.length; i+=10) {
                 if (i===0){
-                    await interaction.reply({ embeds: embeds.slice(0,10) })
+                    await interaction.editReply({ embeds: embeds.slice(0,10) })
                 }else{
                     await interaction.followUp({ embeds: embeds.slice(i,i+10) })
                 }
